@@ -14,7 +14,7 @@ cache = {}
 def remove_spaces(input_string: str) -> str:
     return input_string.replace(" ", "")
 def get_user_name():
-    url = "https://www.ivtool.com/random-name-generater/uinames/api/index.php?region=united%20states&gender=male&amount=5&="
+    url = "http://www.ivtool.com/random-name-generater/uinames/api/index.php?region=united%20states&gender=male&amount=5&="
     resp = requests.get(url, verify=False)
     if resp.status_code != 200:
         print(resp.status_code, resp.text)
@@ -50,7 +50,7 @@ def background_task(input_email: str):
             logger.info(f"{email} {first_name} {last_name} {username}")
             with requests.Session() as session:
                 logger.info("获取网页信息")
-                resp = session.get(url=url1)
+                resp = session.get(url=url1, verify=False)
                 if resp.status_code != 200:
                     print(resp.status_code)
                     return
@@ -64,9 +64,7 @@ def background_task(input_email: str):
                 while True:
                     time.sleep(random.uniform(0.5, 1.2))
                     logger.info("获取验证码")
-                    capt = {}
-                    resp = session.get(url=captcha_url.format(captcha_0),
-                                    headers=dict(header2, **{"Cookie": header2["Cookie"].format(csrftoken)}))
+                    resp = session.get(url=captcha_url.format(captcha_0), headers=dict(header2, **{"Cookie": header2["Cookie"].format(csrftoken)}), verify=False)
                     content = resp.content
                     with open("static/image.jpg", "wb") as f:
                         f.write(content)
@@ -84,7 +82,7 @@ def background_task(input_email: str):
                     data = f"csrfmiddlewaretoken={csrftoken}&first_name={first_name}&last_name={last_name}&username={username}&email={quote(email)}&captcha_0={captcha_0}&captcha_1={captcha_1}&question=0&tos=on"
                     time.sleep(random.uniform(0.5, 1.2))
                     logger.info("请求信息")
-                    resp = session.post(url=url3, headers=dict(header3, **{"Cookie": header3["Cookie"].format(csrftoken)}), data=data)
+                    resp = session.post(url=url3, headers=dict(header3, **{"Cookie": header3["Cookie"].format(csrftoken)}), data=data, verify=False)
                     logger.info(f'请求状态码: {resp.status_code}')
                     print(resp.text)
                     try:
@@ -116,7 +114,7 @@ def background_task(input_email: str):
             del cache[input_email]
 if __name__ == "__main__":
     os.system("cls" if os.name == "nt" else "clear")
-    response = requests.get('https://ping0.cc/geo')
+    response = requests.get('https://ping0.cc/geo', verify=False)
     print(f"=============================\n\033[96m{response.text[:200]}\033[0m=============================")
     print("\033[91m输入邮箱开始自动任务,退出快捷键Ctrl+C.\033[0m")
     while True:
