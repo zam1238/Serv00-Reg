@@ -58,13 +58,27 @@ logger.add(
     level="TRACE" if debugging else "INFO",
 )
 
-
 def get_proxy():
-    psid = "".join(random.choices(string.ascii_letters + string.digits, k=12))
-    logger.info(f"proxy session: {psid}")
-    return {
-        "https": f"https://nZ8GRjnG4Q7s:y3XDOZVrlA8Z_ttl-1h_session-{psid}@superproxy.zenrows.com:1338"
-    }
+    # 动态获取代理信息
+    modify_proxy = input("Do you want to modify the proxy? (yes/no): ").strip().lower()
+    if modify_proxy == "yes":
+        custom_proxy = input(
+            "Enter the new proxy URL (e.g., https://PROXYUSER:PROXYPASSWORD@superproxy.zenrows.com:1338): "
+        ).strip()
+
+        # 自动替换 psid
+        psid = "".join(random.choices(string.ascii_letters + string.digits, k=12))
+        proxy_with_session = custom_proxy.replace(
+            "@superproxy", f"_ttl-1h_session-{psid}@superproxy"
+        )
+        logger.info(f"Using custom proxy: {proxy_with_session}")
+        return {"https": proxy_with_session}
+    else:
+        psid = "".join(random.choices(string.ascii_letters + string.digits, k=12))
+        logger.info(f"Using default proxy session: {psid}")
+        return {
+            "https": f"https://nZ8GRjnG4Q7s:y3XDOZVrlA8Z_ttl-1h_session-{psid}@superproxy.zenrows.com:1338"
+        }
 
 
 # 检查输入是否完整
